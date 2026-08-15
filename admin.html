@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إضافة مقالة — خاص</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #120F0C; --bg-raised: #19150F; --hairline: #2B241A;
+    --ink: #EAE2D1; --ink-dim: #9C907A; --ink-faint: #675E4C;
+    --brass: #C5943D; --brass-dim: #7A5F2C;
+    --err: #C25B4A; --ok: #7DA870;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; background: var(--bg); color: var(--ink);
+    font-family: 'Noto Naskh Arabic', serif; min-height:100vh;
+  }
+  .wrap{ max-width: 640px; margin: 0 auto; padding: 50px 24px 100px; }
+  h1{ font-family: 'Aref Ruqaa', serif; font-size: 32px; text-align:center; margin: 0 0 6px; }
+  p.sub{ text-align:center; color: var(--ink-dim); font-size:14px; margin: 0 0 40px; }
+  a.back{ display:inline-block; color: var(--brass); font-size: 13px; margin-bottom: 24px; text-decoration:none; }
+
+  fieldset{ border: 1px solid var(--hairline); border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+  legend{ padding: 0 8px; color: var(--brass); font-size: 13px; }
+
+  label{ display:block; font-size: 13px; color: var(--ink-dim); margin: 14px 0 6px; }
+  label:first-child{ margin-top: 0; }
+  input, select, textarea{
+    width: 100%; background: var(--bg-raised); border: 1px solid var(--hairline);
+    color: var(--ink); border-radius: 6px; padding: 10px 12px; font-family: inherit;
+    font-size: 15px; direction: rtl;
+  }
+  input[type=password]{ direction: ltr; text-align: left; font-family: monospace; }
+  textarea{ min-height: 220px; resize: vertical; line-height: 1.8; }
+  input:focus, select:focus, textarea:focus{ outline: none; border-color: var(--brass); }
+
+  .hint{ font-size: 12px; color: var(--ink-faint); margin-top: 6px; line-height: 1.7; }
+  .hint a{ color: var(--brass-dim); }
+
+  button{
+    width: 100%; background: var(--brass); color: #120F0C; border: none;
+    border-radius: 6px; padding: 14px; font-size: 16px; font-weight: 700;
+    font-family: inherit; cursor: pointer; margin-top: 8px;
+  }
+  button:disabled{ opacity: 0.5; cursor: default; }
+  button.secondary{ background: transparent; color: var(--ink-dim); border: 1px solid var(--hairline); font-weight: 400; font-size: 13px; padding: 8px; margin-top: 10px; }
+
+  #status{ margin-top: 20px; padding: 14px 16px; border-radius: 6px; font-size: 14px; display:none; }
+  #status.show{ display:block; }
+  #status.ok{ background: rgba(125,168,112,0.1); border: 1px solid var(--ok); color: var(--ok); }
+  #status.err{ background: rgba(194,91,74,0.1); border: 1px solid var(--err); color: var(--err); }
+  #status a{ color: inherit; text-decoration: underline; }
+
+  details{ margin-top: 30px; font-size: 13px; color: var(--ink-dim); }
+  details summary{ cursor: pointer; color: var(--brass-dim); }
+  details .box{ margin-top: 10px; line-height: 1.9; }
+  details ol{ padding-right: 20px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">→ العودة للأرشيف</a>
+  <h1>إضافة مقالة جديدة</h1>
+  <p class="sub">هتتنشر مباشرة على الموقع الحي — الصفحة دي خاصة بيك بس</p>
+
+  <fieldset>
+    <legend>مفتاح الدخول (مرة واحدة فقط)</legend>
+    <label for="token">GitHub Token</label>
+    <input type="password" id="token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off">
+    <div class="hint">هيتحفظ في المتصفح بتاعك بس، ومش بيتبعت لحد غير GitHub مباشرة.</div>
+    <details>
+      <summary>إزاي أجيب الـ Token ده؟ (خطوة تعملها مرة واحدة بس)</summary>
+      <div class="box">
+        <ol>
+          <li>روح لـ <a href="https://github.com/settings/tokens?type=beta" target="_blank" style="color:var(--brass)">github.com/settings/tokens?type=beta</a></li>
+          <li>دوس <b>Generate new token</b></li>
+          <li>في Repository access اختار <b>Only select repositories</b> وحدد الريبو <b>archive</b></li>
+          <li>تحت Permissions → Repository permissions، دور على <b>Contents</b> وخليها <b>Read and write</b></li>
+          <li>دوس <b>Generate token</b> واحفظ القيمة اللي هتظهر (تبدأ بـ github_pat_...) — مش هتقدر تشوفها تاني بعد كده</li>
+          <li>الصقها في الخانة اللي فوق</li>
+        </ol>
+      </div>
+    </details>
+  </fieldset>
+
+  <fieldset>
+    <legend>بيانات المقالة</legend>
+    <label for="title">العنوان</label>
+    <input type="text" id="title" placeholder="عنوان المقالة">
+
+    <label for="subtitle">عنوان فرعي (اختياري)</label>
+    <input type="text" id="subtitle" placeholder="اتركه فاضي لو مش محتاجه">
+
+    <label for="category">القسم</label>
+    <select id="category">
+      <option value="مقالة">مقالة</option>
+      <option value="تقرير">تقرير</option>
+      <option value="مراجعة">مراجعة</option>
+      <option value="مقابلة">مقابلة</option>
+    </select>
+
+    <label for="date">التاريخ (اختياري)</label>
+    <input type="text" id="date" placeholder="مثلا 2024">
+
+    <label for="content">النص الكامل</label>
+    <textarea id="content" placeholder="الصق النص هنا. افصل بين كل فقرة وتانية بسطر فاضي."></textarea>
+    <div class="hint">كل فقرة في سطر منفصل، وسايب سطر فاضي بينها وبين اللي بعدها.</div>
+  </fieldset>
+
+  <button id="publishBtn">انشر المقالة</button>
+  <button class="secondary" id="clearTokenBtn">امسح المفتاح المحفوظ</button>
+
+  <div id="status"></div>
+</div>
+
+<script>
+  const REPO_OWNER = "abdulrahmann0marr-source";
+  const REPO_NAME = "archive";
+  const FILE_PATH = "articles.json";
+  const BRANCH = "main";
+
+  const tokenEl = document.getElementById('token');
+  const titleEl = document.getElementById('title');
+  const subtitleEl = document.getElementById('subtitle');
+  const categoryEl = document.getElementById('category');
+  const dateEl = document.getElementById('date');
+  const contentEl = document.getElementById('content');
+  const statusEl = document.getElementById('status');
+  const publishBtn = document.getElementById('publishBtn');
+  const clearTokenBtn = document.getElementById('clearTokenBtn');
+
+  // Load saved token
+  const savedToken = localStorage.getItem('gh_token');
+  if(savedToken) tokenEl.value = savedToken;
+
+  clearTokenBtn.addEventListener('click', () => {
+    localStorage.removeItem('gh_token');
+    tokenEl.value = '';
+    showStatus('ok', 'اتمسح المفتاح من المتصفح.');
+  });
+
+  function showStatus(type, html){
+    statusEl.className = 'show ' + type;
+    statusEl.innerHTML = html;
+  }
+
+  function slugify(title){
+    // Simple transliteration-free slug: timestamp-based to guarantee uniqueness
+    const ts = Date.now().toString(36);
+    return 'article-' + ts;
+  }
+
+  function utf8ToBase64(str){
+    return btoa(unescape(encodeURIComponent(str)));
+  }
+  function base64ToUtf8(str){
+    return decodeURIComponent(escape(atob(str)));
+  }
+
+  publishBtn.addEventListener('click', async () => {
+    const token = tokenEl.value.trim();
+    const title = titleEl.value.trim();
+    const subtitle = subtitleEl.value.trim();
+    const category = categoryEl.value;
+    const date = dateEl.value.trim();
+    const rawContent = contentEl.value.trim();
+
+    if(!token){ showStatus('err', 'محتاج تحط الـ Token الأول.'); return; }
+    if(!title){ showStatus('err', 'محتاج تكتب عنوان.'); return; }
+    if(!rawContent){ showStatus('err', 'محتاج تلصق نص المقالة.'); return; }
+
+    localStorage.setItem('gh_token', token);
+
+    const paragraphs = rawContent.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+
+    publishBtn.disabled = true;
+    showStatus('ok', 'جاري النشر...');
+
+    const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
+
+    try{
+      // 1. Get current file (content + sha)
+      const getRes = await fetch(apiUrl + `?ref=${BRANCH}`, {
+        headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github+json' }
+      });
+      if(!getRes.ok){
+        if(getRes.status === 401) throw new Error('المفتاح غلط أو منتهي الصلاحية.');
+        if(getRes.status === 404) throw new Error('ملف articles.json مش موجود في الريبو.');
+        throw new Error('فشل تحميل الملف الحالي (كود ' + getRes.status + ')');
+      }
+      const fileData = await getRes.json();
+      const currentJson = base64ToUtf8(fileData.content.replace(/\n/g, ''));
+      const articles = JSON.parse(currentJson);
+
+      // 2. Build new article, add to front
+      const newArticle = {
+        slug: slugify(title),
+        title: title,
+        category: category,
+        date: date,
+        ready: true,
+        content: paragraphs
+      };
+      if(subtitle) newArticle.subtitle = subtitle;
+
+      articles.unshift(newArticle);
+
+      // 3. Push updated file
+      const newJson = JSON.stringify(articles, null, 2);
+      const putRes = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `token ${token}`,
+          'Accept': 'application/vnd.github+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: `إضافة مقالة: ${title}`,
+          content: utf8ToBase64(newJson),
+          sha: fileData.sha,
+          branch: BRANCH
+        })
+      });
+
+      if(!putRes.ok){
+        const err = await putRes.json().catch(()=>({}));
+        throw new Error('فشل الحفظ: ' + (err.message || putRes.status));
+      }
+
+      showStatus('ok', `تم النشر! هيظهر على الموقع خلال دقيقة أو اتنين. <a href="index.html" target="_blank">افتح الأرشيف</a>`);
+      titleEl.value = ''; subtitleEl.value = ''; dateEl.value = ''; contentEl.value = '';
+
+    }catch(e){
+      showStatus('err', e.message);
+    }finally{
+      publishBtn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>
