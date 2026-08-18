@@ -87,15 +87,6 @@
   </fieldset>
 
   <fieldset>
-    <legend>اختر مقالة</legend>
-    <label for="articlePicker">هتضيف جديدة ولا تعدّل موجودة؟</label>
-    <select id="articlePicker">
-      <option value="">— مقالة جديدة —</option>
-    </select>
-    <div class="hint" id="pickerHint">هيتحمّل من الأرشيف تلقائيًا بمجرد ما تحط التوكن.</div>
-  </fieldset>
-
-  <fieldset>
     <legend>بيانات المقالة</legend>
     <label for="title">العنوان</label>
     <input type="text" id="title" placeholder="عنوان المقالة">
@@ -114,29 +105,12 @@
     <label for="date">التاريخ (اختياري)</label>
     <input type="text" id="date" placeholder="مثلا 2024">
 
-    <label for="image">صورة الغلاف (اختياري)</label>
-    <input type="text" id="image" placeholder="https://... أو images/photo.jpg" style="direction:ltr; text-align:left;">
-    <div class="hint">رابط مباشر لصورة. شوف "إزاي أضيف صور؟" تحت لشرح المصادر المجانية.</div>
-
     <label for="content">النص الكامل</label>
     <textarea id="content" placeholder="الصق النص هنا. افصل بين كل فقرة وتانية بسطر فاضي."></textarea>
-    <div class="hint">
-      كل فقرة في سطر منفصل، وسايب سطر فاضي بينها وبين اللي بعدها.<br>
-      عشان تحط صورة *جوه* النص (مش غلاف)، اكتب سطرها لوحده كده: <code>IMG:https://رابط-الصورة.jpg</code>
-    </div>
-
-    <details>
-      <summary>إزاي أضيف صور؟ (مجانًا)</summary>
-      <div class="box">
-        <b>الطريقة الأسهل:</b> ارفع الصورة على <a href="https://imgur.com/upload" target="_blank" style="color:var(--brass)">imgur.com/upload</a> (مجانًا، من غير حساب)، بعد الرفع دوس بزر الماوس اليمين على الصورة → Copy image address، والصق الرابط في خانة "صورة الغلاف" أو جوه IMG: في النص.
-        <br><br>
-        <b>أو:</b> ارفع الصورة كملف داخل الريبو بتاعك على GitHub (Add file → Upload files) جوه فولدر اسمه <code>images</code>، وبعدين استخدم المسار زي كده: <code>images/اسم-الصورة.jpg</code>
-      </div>
-    </details>
+    <div class="hint">كل فقرة في سطر منفصل، وسايب سطر فاضي بينها وبين اللي بعدها.</div>
   </fieldset>
 
   <button id="publishBtn">انشر المقالة</button>
-  <button class="secondary" id="deleteBtn" style="display:none; color:var(--err); border-color:var(--err);">احذف المقالة دي</button>
   <button class="secondary" id="clearTokenBtn">امسح المفتاح المحفوظ</button>
 
   <div id="status"></div>
@@ -153,24 +127,14 @@
   const subtitleEl = document.getElementById('subtitle');
   const categoryEl = document.getElementById('category');
   const dateEl = document.getElementById('date');
-  const imageEl = document.getElementById('image');
   const contentEl = document.getElementById('content');
   const statusEl = document.getElementById('status');
   const publishBtn = document.getElementById('publishBtn');
-  const deleteBtn = document.getElementById('deleteBtn');
   const clearTokenBtn = document.getElementById('clearTokenBtn');
-  const pickerEl = document.getElementById('articlePicker');
-  const pickerHint = document.getElementById('pickerHint');
-
-  let cachedArticles = null; // last-loaded articles + sha, refreshed on token entry / focus
-  let cachedSha = null;
-  let editingSlug = null; // null = new article mode
 
   // Load saved token
   const savedToken = localStorage.getItem('gh_token');
-  if(savedToken){ tokenEl.value = savedToken; loadArticleList(); }
-
-  tokenEl.addEventListener('change', () => { if(tokenEl.value.trim()) loadArticleList(); });
+  if(savedToken) tokenEl.value = savedToken;
 
   clearTokenBtn.addEventListener('click', () => {
     localStorage.removeItem('gh_token');
@@ -184,104 +148,16 @@
   }
 
   function slugify(title){
+    // Simple transliteration-free slug: timestamp-based to guarantee uniqueness
     const ts = Date.now().toString(36);
     return 'article-' + ts;
   }
 
-  function utf8ToBase64(str){ return btoa(unescape(encodeURIComponent(str))); }
-  function base64ToUtf8(str){ return decodeURIComponent(escape(atob(str))); }
-
-  const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
-
-  async function loadArticleList(){
-    const token = tokenEl.value.trim();
-    if(!token) return;
-    pickerHint.textContent = 'جاري التحميل...';
-    try{
-      const res = await fetch(apiUrl + `?ref=${BRANCH}`, {
-        headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github+json' }
-      });
-      if(!res.ok) throw new Error(res.status === 401 ? 'المفتاح غلط.' : 'فشل تحميل القائمة.');
-      const fileData = await res.json();
-      cachedSha = fileData.sha;
-      cachedArticles = JSON.parse(base64ToUtf8(fileData.content.replace(/\n/g, '')));
-
-      pickerEl.innerHTML = '<option value="">— مقالة جديدة —</option>' +
-        cachedArticles.map(a => `<option value="${a.slug}">${a.title}${a.ready ? '' : ' (مسودة)'}</option>`).join('');
-      pickerHint.textContent = `${cachedArticles.length} مقالة محمّلة. اختار وحدة للتعديل، أو سيبها فاضية لمقالة جديدة.`;
-    }catch(e){
-      pickerHint.textContent = e.message;
-    }
+  function utf8ToBase64(str){
+    return btoa(unescape(encodeURIComponent(str)));
   }
-
-  pickerEl.addEventListener('change', () => {
-    const slug = pickerEl.value;
-    if(!slug){
-      // New article mode
-      editingSlug = null;
-      titleEl.value = ''; subtitleEl.value = ''; dateEl.value = ''; imageEl.value = ''; contentEl.value = '';
-      categoryEl.value = 'مقالة';
-      publishBtn.textContent = 'انشر المقالة';
-      deleteBtn.style.display = 'none';
-      return;
-    }
-    const a = cachedArticles.find(x => x.slug === slug);
-    if(!a) return;
-    editingSlug = slug;
-    titleEl.value = a.title || '';
-    subtitleEl.value = a.subtitle || '';
-    categoryEl.value = a.category || 'مقالة';
-    dateEl.value = a.date || '';
-    imageEl.value = a.image || '';
-    contentEl.value = (a.content || []).join('\n\n');
-    publishBtn.textContent = 'احفظ التعديلات';
-    deleteBtn.style.display = 'block';
-  });
-
-  deleteBtn.addEventListener('click', async () => {
-    if(!editingSlug) return;
-    if(!confirm('متأكد إنك عايز تحذف المقالة دي؟ الحذف نهائي.')) return;
-    const token = tokenEl.value.trim();
-    if(!token || !cachedArticles){ showStatus('err', 'محتاج تحمل القائمة الأول (حط التوكن).'); return; }
-
-    deleteBtn.disabled = true;
-    showStatus('ok', 'جاري الحذف...');
-    try{
-      const updated = cachedArticles.filter(a => a.slug !== editingSlug);
-      await saveArticles(token, updated, `حذف مقالة: ${titleEl.value}`);
-      showStatus('ok', `تم الحذف. <a href="index.html" target="_blank">افتح الأرشيف</a>`);
-      pickerEl.value = '';
-      pickerEl.dispatchEvent(new Event('change'));
-      await loadArticleList();
-    }catch(e){
-      showStatus('err', e.message);
-    }finally{
-      deleteBtn.disabled = false;
-    }
-  });
-
-  async function saveArticles(token, articles, commitMessage){
-    const newJson = JSON.stringify(articles, null, 2);
-    const putRes = await fetch(apiUrl, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `token ${token}`,
-        'Accept': 'application/vnd.github+json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        message: commitMessage,
-        content: utf8ToBase64(newJson),
-        sha: cachedSha,
-        branch: BRANCH
-      })
-    });
-    if(!putRes.ok){
-      const err = await putRes.json().catch(()=>({}));
-      throw new Error('فشل الحفظ: ' + (err.message || putRes.status));
-    }
-    const result = await putRes.json();
-    cachedSha = result.content.sha; // keep sha fresh for next save
+  function base64ToUtf8(str){
+    return decodeURIComponent(escape(atob(str)));
   }
 
   publishBtn.addEventListener('click', async () => {
@@ -290,7 +166,6 @@
     const subtitle = subtitleEl.value.trim();
     const category = categoryEl.value;
     const date = dateEl.value.trim();
-    const image = imageEl.value.trim();
     const rawContent = contentEl.value.trim();
 
     if(!token){ showStatus('err', 'محتاج تحط الـ Token الأول.'); return; }
@@ -302,10 +177,12 @@
     const paragraphs = rawContent.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
 
     publishBtn.disabled = true;
-    showStatus('ok', editingSlug ? 'جاري حفظ التعديلات...' : 'جاري النشر...');
+    showStatus('ok', 'جاري النشر...');
+
+    const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
 
     try{
-      // Refresh current state right before saving to avoid stale sha conflicts
+      // 1. Get current file (content + sha)
       const getRes = await fetch(apiUrl + `?ref=${BRANCH}`, {
         headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github+json' }
       });
@@ -315,40 +192,46 @@
         throw new Error('فشل تحميل الملف الحالي (كود ' + getRes.status + ')');
       }
       const fileData = await getRes.json();
-      cachedSha = fileData.sha;
-      const articles = JSON.parse(base64ToUtf8(fileData.content.replace(/\n/g, '')));
+      const currentJson = base64ToUtf8(fileData.content.replace(/\n/g, ''));
+      const articles = JSON.parse(currentJson);
 
-      const articleObj = {
-        slug: editingSlug || slugify(title),
+      // 2. Build new article, add to front
+      const newArticle = {
+        slug: slugify(title),
         title: title,
         category: category,
         date: date,
         ready: true,
         content: paragraphs
       };
-      if(subtitle) articleObj.subtitle = subtitle;
-      if(image) articleObj.image = image;
+      if(subtitle) newArticle.subtitle = subtitle;
 
-      let finalList;
-      let commitMessage;
-      if(editingSlug){
-        finalList = articles.map(a => a.slug === editingSlug ? articleObj : a);
-        commitMessage = `تعديل مقالة: ${title}`;
-      } else {
-        finalList = [articleObj, ...articles];
-        commitMessage = `إضافة مقالة: ${title}`;
+      articles.unshift(newArticle);
+
+      // 3. Push updated file
+      const newJson = JSON.stringify(articles, null, 2);
+      const putRes = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `token ${token}`,
+          'Accept': 'application/vnd.github+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: `إضافة مقالة: ${title}`,
+          content: utf8ToBase64(newJson),
+          sha: fileData.sha,
+          branch: BRANCH
+        })
+      });
+
+      if(!putRes.ok){
+        const err = await putRes.json().catch(()=>({}));
+        throw new Error('فشل الحفظ: ' + (err.message || putRes.status));
       }
 
-      await saveArticles(token, finalList, commitMessage);
-      cachedArticles = finalList;
-
-      showStatus('ok', `${editingSlug ? 'اتحفظت التعديلات' : 'تم النشر'}! هيظهر على الموقع خلال دقيقة أو اتنين. <a href="index.html" target="_blank">افتح الأرشيف</a>`);
-
-      if(!editingSlug){
-        titleEl.value = ''; subtitleEl.value = ''; dateEl.value = ''; imageEl.value = ''; contentEl.value = '';
-      }
-      await loadArticleList();
-      if(editingSlug) pickerEl.value = editingSlug;
+      showStatus('ok', `تم النشر! هيظهر على الموقع خلال دقيقة أو اتنين. <a href="index.html" target="_blank">افتح الأرشيف</a>`);
+      titleEl.value = ''; subtitleEl.value = ''; dateEl.value = ''; contentEl.value = '';
 
     }catch(e){
       showStatus('err', e.message);
