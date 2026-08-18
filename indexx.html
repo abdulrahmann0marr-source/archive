@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أرشيف عبدالرحمن حسين</title>
+<meta name="description" content="أرشيف شخصي للمقالات والتقارير والمراجعات">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #120F0C;
+    --bg-raised: #19150F;
+    --hairline: #2B241A;
+    --ink: #EAE2D1;
+    --ink-dim: #9C907A;
+    --ink-faint: #675E4C;
+    --brass: #C5943D;
+    --brass-dim: #7A5F2C;
+    --measure: 640px;
+  }
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+  body{
+    margin:0;
+    background: var(--bg);
+    background-image: radial-gradient(ellipse 900px 500px at 15% -10%, rgba(197,148,61,0.06), transparent 60%);
+    color: var(--ink);
+    font-family: 'Noto Naskh Arabic', 'Amiri', serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  ::selection{ background: var(--brass); color: #120F0C; }
+  a{ color: inherit; text-decoration: none; }
+  .wrap{ max-width: 780px; margin: 0 auto; padding: 0 24px; }
+
+  header.masthead{ padding: 72px 0 40px; text-align: center; border-bottom: 1px solid var(--hairline); }
+  header.masthead .kicker{ font-size: 13px; letter-spacing: 0.08em; color: var(--brass); margin-bottom: 14px; }
+  header.masthead h1{ font-family: 'Aref Ruqaa', serif; font-weight: 700; font-size: clamp(40px, 7vw, 62px); margin: 0 0 12px; line-height: 1.15; }
+  header.masthead p.tagline{ color: var(--ink-dim); font-size: 16px; max-width: 480px; margin: 0 auto; line-height: 1.9; }
+
+  nav.filters{ display:flex; justify-content:center; align-items:center; gap: 18px; flex-wrap: wrap; padding: 28px 0; font-size: 14px; color: var(--ink-faint); }
+  nav.filters button{ background:none; border:none; font-family: inherit; font-size: 14px; color: var(--ink-dim); cursor:pointer; padding: 4px 2px; position: relative; }
+  nav.filters button.active{ color: var(--brass); }
+  nav.filters button.active::after{ content:''; position:absolute; right:0; left:0; bottom:-3px; height:1px; background: var(--brass); }
+  nav.filters .dot{ color: var(--ink-faint); font-size: 10px; }
+
+  ul.entries{ list-style:none; margin:0; padding: 8px 0 100px; }
+  ul.entries li{ border-bottom: 1px solid var(--hairline); }
+  ul.entries li .row{ display:flex; justify-content:space-between; align-items: baseline; gap: 20px; padding: 30px 4px; }
+  ul.entries li a.entry-link{ display:block; flex: 1; min-width: 0; }
+  ul.entries li a.entry-link:hover .title, ul.entries li a.entry-link:focus-visible .title{ color: var(--brass); }
+  ul.entries li a.entry-link:hover .underline, ul.entries li a.entry-link:focus-visible .underline{ transform: scaleX(1); }
+  .eyebrow{ font-size: 12px; letter-spacing: 0.06em; color: var(--brass-dim); margin-bottom: 10px; }
+  .title{ font-family: 'Aref Ruqaa', serif; font-size: clamp(22px, 3.4vw, 30px); line-height: 1.5; margin: 0 0 8px; transition: color 0.25s ease; position: relative; display: inline; }
+  .title-wrap{ position: relative; display: inline-block; }
+  .underline{ position:absolute; right:0; left:0; bottom: -2px; height: 1px; background: var(--brass); transform: scaleX(0); transform-origin: right; transition: transform 0.35s ease; }
+  .subtitle{ font-size: 14px; color: var(--ink-faint); margin: 0 0 6px; }
+  .badge-draft{ display:inline-block; font-size: 11px; color: var(--ink-faint); border: 1px solid var(--hairline); border-radius: 3px; padding: 2px 8px; margin-top: 8px; }
+  li.draft .title{ color: var(--ink-faint); }
+  li.draft a.entry-link{ cursor: default; }
+  li.draft a.entry-link:hover .title{ color: var(--ink-faint); }
+
+  footer{ text-align:center; padding: 40px 0 60px; color: var(--ink-faint); font-size: 12px; letter-spacing: 0.04em; }
+  footer a{ color: var(--brass-dim); }
+
+  .reader{ display:none; }
+  .reader.active{ display:block; }
+  .list-view.hidden{ display:none; }
+  .back-link{ display:inline-flex; align-items:center; gap: 6px; color: var(--brass); font-size: 14px; margin: 40px 0 30px; }
+  .back-link:hover{ opacity: 0.8; }
+  article.piece header{ padding-bottom: 28px; margin-bottom: 34px; border-bottom: 1px solid var(--hairline); text-align: right; }
+  article.piece .eyebrow{ margin-bottom: 16px; }
+  article.piece h2{ font-family: 'Aref Ruqaa', serif; font-weight: 700; font-size: clamp(30px, 5vw, 44px); line-height: 1.4; margin: 0 0 10px; }
+  article.piece .piece-subtitle{ color: var(--ink-dim); font-size: 16px; }
+  article.piece .body p{ font-size: 19px; line-height: 2.15; color: var(--ink); margin: 0 0 26px; max-width: var(--measure); text-align: justify; }
+  article.piece .body{ padding-bottom: 100px; }
+  article.piece .cover{ width: 100%; max-width: var(--measure); border: 1px solid var(--hairline); border-radius: 6px; margin: 0 0 34px; display:block; }
+  article.piece .body img{ width: 100%; max-width: var(--measure); border: 1px solid var(--hairline); border-radius: 6px; margin: 0 0 26px; display:block; }
+
+  .state-msg{ text-align:center; color: var(--ink-faint); padding: 60px 0; font-size: 14px; }
+
+  @media (max-width: 560px){
+    ul.entries li .row{ flex-direction: column; align-items: flex-start; }
+    article.piece .body p{ font-size: 17px; line-height: 2; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div id="listView" class="list-view">
+    <header class="masthead">
+      <div class="kicker">أرشيف شخصي</div>
+      <h1>عبدالرحمن حسين</h1>
+      <p class="tagline">مقالات وتقارير ومراجعات، محاولة لتوثيق ما يستحق التأمل قبل أن يبتلعه الزحام.</p>
+    </header>
+    <nav class="filters" id="filters"></nav>
+    <ul class="entries" id="entries"></ul>
+  </div>
+
+  <div id="readerView" class="reader">
+    <a href="#/" class="back-link">→ العودة إلى الأرشيف</a>
+    <article class="piece" id="pieceContent"></article>
+  </div>
+
+  <footer>أرشيف شخصي — عبدالرحمن حسين</footer>
+</div>
+
+<script>
+  const CATEGORIES = ["الكل", "مقالة", "تقرير", "مراجعة", "مقابلة"];
+  let activeCategory = "الكل";
+  let ARTICLES = [];
+
+  const filtersEl = document.getElementById('filters');
+  const entriesEl = document.getElementById('entries');
+  const listView = document.getElementById('listView');
+  const readerView = document.getElementById('readerView');
+  const pieceContent = document.getElementById('pieceContent');
+
+  function renderFilters(){
+    filtersEl.innerHTML = CATEGORIES.map((cat, i) => {
+      const btn = `<button data-cat="${cat}" class="${cat===activeCategory ? 'active':''}">${cat}</button>`;
+      return i < CATEGORIES.length - 1 ? btn + `<span class="dot">•</span>` : btn;
+    }).join('');
+    filtersEl.querySelectorAll('button').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        activeCategory = b.dataset.cat;
+        renderFilters();
+        renderList();
+      });
+    });
+  }
+
+  function renderList(){
+    const items = ARTICLES.filter(a => activeCategory === "الكل" || a.category === activeCategory);
+    entriesEl.innerHTML = items.map(a => `
+      <li class="${a.ready ? '' : 'draft'}">
+        <a class="entry-link" href="${a.ready ? '#/'+a.slug : '#'}">
+          <div class="row">
+            <div style="min-width:0;">
+              <div class="eyebrow">${a.category}${a.date ? ' · ' + a.date : ''}</div>
+              <div class="title-wrap">
+                <span class="title">${a.title}</span>
+                <span class="underline"></span>
+              </div>
+              ${a.subtitle ? `<div class="subtitle">${a.subtitle}</div>` : ''}
+              ${!a.ready ? `<div class="badge-draft">النص الكامل لسه هيتضاف</div>` : ''}
+            </div>
+          </div>
+        </a>
+      </li>
+    `).join('');
+  }
+
+  function renderPiece(slug){
+    const a = ARTICLES.find(x => x.slug === slug && x.ready);
+    if(!a){ window.location.hash = '#/'; return; }
+    document.title = a.title + ' — أرشيف عبدالرحمن حسين';
+    const bodyHtml = a.content.map(p => {
+      if(p.startsWith('IMG:')) return `<img src="${p.slice(4).trim()}" alt="">`;
+      return `<p>${p}</p>`;
+    }).join('');
+    pieceContent.innerHTML = `
+      <header>
+        <div class="eyebrow">${a.category}${a.date ? ' · ' + a.date : ''}</div>
+        <h2>${a.title}</h2>
+        ${a.subtitle ? `<div class="piece-subtitle">${a.subtitle}</div>` : ''}
+      </header>
+      ${a.image ? `<img class="cover" src="${a.image}" alt="">` : ''}
+      <div class="body">${bodyHtml}</div>
+    `;
+  }
+
+  function route(){
+    const hash = window.location.hash;
+    if(hash.startsWith('#/') && hash.length > 2){
+      renderPiece(hash.slice(2));
+      listView.classList.add('hidden');
+      readerView.classList.add('active');
+      window.scrollTo(0,0);
+    } else {
+      listView.classList.remove('hidden');
+      readerView.classList.remove('active');
+      document.title = 'أرشيف عبدالرحمن حسين';
+    }
+  }
+
+  async function init(){
+    entriesEl.innerHTML = `<div class="state-msg">جاري التحميل...</div>`;
+    try{
+      const res = await fetch('articles.json', { cache: 'no-store' });
+      if(!res.ok) throw new Error('fetch failed');
+      ARTICLES = await res.json();
+      renderFilters();
+      renderList();
+      window.addEventListener('hashchange', route);
+      route();
+    }catch(e){
+      entriesEl.innerHTML = `<div class="state-msg">تعذّر تحميل المقالات. تأكد إن ملف articles.json موجود بجوار index.html.</div>`;
+    }
+  }
+
+  init();
+</script>
+
+<!--
+  عداد الزوار (GoatCounter) — مجاني، بيديك عدد زوار حقيقي بالظبط.
+  اتبع الخطوات في README.md عشان تفعّله، وبعدين بدّل "your-code" باسم الحساب بتاعك.
+-->
+<script data-goatcounter="https://abdulrahmanarchive.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+
+</body>
+</html>
