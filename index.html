@@ -91,6 +91,42 @@
 
   .state-msg{ text-align:center; color: var(--ink-faint); padding: 60px 0; font-size: 14px; }
 
+  /* Share modal */
+  .share-overlay{
+    display:none; position: fixed; inset: 0; background: rgba(8,6,4,0.72);
+    z-index: 100; align-items: center; justify-content: center; padding: 24px;
+  }
+  .share-overlay.active{ display:flex; }
+  .share-card{
+    background: var(--bg-raised); border: 1px solid var(--hairline); border-radius: 10px;
+    max-width: 380px; width: 100%; overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .share-card .preview-img{ width: 100%; aspect-ratio: 1.9 / 1; object-fit: cover; display:block; background: var(--bg); border-bottom: 1px solid var(--hairline); }
+  .share-card .preview-body{ padding: 20px 22px 6px; text-align: right; }
+  .share-card .preview-eyebrow{ font-size: 11px; letter-spacing: 0.06em; color: var(--brass-dim); margin-bottom: 8px; }
+  .share-card .preview-title{ font-family: 'Aref Ruqaa', serif; font-size: 22px; line-height: 1.5; margin: 0 0 6px; }
+  .share-card .preview-subtitle{ font-size: 13px; color: var(--ink-faint); margin: 0 0 4px; }
+  .share-actions{ display:grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 18px 20px; }
+  .share-actions a, .share-actions button{
+    display:flex; flex-direction:column; align-items:center; gap: 7px;
+    background:none; border:none; color: var(--ink-dim); font-family: inherit; font-size: 11px;
+    cursor:pointer; padding: 4px 0;
+  }
+  .share-actions .icon-circle{
+    width: 42px; height: 42px; border-radius: 50%; display:flex; align-items:center; justify-content:center;
+    background: var(--bg); border: 1px solid var(--hairline); color: var(--ink-dim);
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+  .share-actions a:hover .icon-circle, .share-actions button:hover .icon-circle{ border-color: var(--brass); color: var(--brass); }
+  .share-actions .icon-circle svg{ width: 18px; height: 18px; }
+  .share-actions .copy-btn.copied .icon-circle{ border-color: #7DA870; color: #7DA870; }
+  .share-close{
+    display:block; width: 100%; background: none; border: none; border-top: 1px solid var(--hairline);
+    color: var(--ink-faint); font-family: inherit; font-size: 13px; padding: 14px; cursor: pointer;
+  }
+  .share-close:hover{ color: var(--ink-dim); }
+
   @media (max-width: 560px){
     ul.entries li .row{ flex-direction: column; align-items: flex-start; }
     article.piece .body p{ font-size: 17px; line-height: 2; }
@@ -98,6 +134,36 @@
 </style>
 </head>
 <body>
+
+<div id="shareOverlay" class="share-overlay">
+  <div class="share-card">
+    <img id="sharePreviewImg" class="preview-img" alt="" style="display:none;">
+    <div class="preview-body">
+      <div class="preview-eyebrow" id="sharePreviewEyebrow"></div>
+      <div class="preview-title" id="sharePreviewTitle"></div>
+      <div class="preview-subtitle" id="sharePreviewSubtitle"></div>
+    </div>
+    <div class="share-actions">
+      <a id="shareWhatsapp" href="#" target="_blank" rel="noopener">
+        <span class="icon-circle"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.6.1-.2.3-.7.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.5-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.1.2-.3.3-.5.1-.2 0-.4 0-.5C10 9 9.5 7.8 9.3 7.3c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1.1 2.7c.1.2 1.9 2.9 4.6 4 .6.3 1.1.4 1.5.6.6.2 1.2.2 1.6.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2 0-.1-.2-.2-.5-.3z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.5 1.3 5L2 22l5.2-1.4c1.4.8 3.1 1.2 4.8 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.3c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.3.9.9-3.2-.2-.3C4 14.9 3.6 13.5 3.6 12c0-4.6 3.8-8.4 8.4-8.4s8.4 3.8 8.4 8.4-3.8 8.3-8.4 8.3z"/></svg></span>
+        واتساب
+      </a>
+      <a id="shareTwitter" href="#" target="_blank" rel="noopener">
+        <span class="icon-circle"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.4 8.4L23 22h-6.9l-5.4-6.9L4.5 22H1.4l7.9-9L1 2h7.1l4.9 6.3L18.9 2zm-1.2 18h1.9L7.4 4h-2l12.3 16z"/></svg></span>
+        إكس
+      </a>
+      <a id="shareTelegram" href="#" target="_blank" rel="noopener">
+        <span class="icon-circle"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 2 2.5 10.3c-1.3.6-1.3 1.4-.2 1.7l5 1.6 1.9 6c.2.6.5.8 1 .8.4 0 .6-.2.9-.5l2.2-2.2 4.6 3.5c.9.5 1.5.2 1.7-.8L23.9 3.2c.3-1.3-.5-1.9-1.9-1.2z"/></svg></span>
+        تيليجرام
+      </a>
+      <button id="shareCopy" class="copy-btn" type="button">
+        <span class="icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></span>
+        <span id="shareCopyLabel">نسخ الرابط</span>
+      </button>
+    </div>
+    <button id="shareModalClose" class="share-close" type="button">إغلاق</button>
+  </div>
+</div>
 
 <div class="wrap">
   <div id="listView" class="list-view">
@@ -194,41 +260,75 @@
     `;
   }
 
-  async function shareCurrentArticle(){
+  const shareOverlay = document.getElementById('shareOverlay');
+  const sharePreviewImg = document.getElementById('sharePreviewImg');
+  const sharePreviewEyebrow = document.getElementById('sharePreviewEyebrow');
+  const sharePreviewTitle = document.getElementById('sharePreviewTitle');
+  const sharePreviewSubtitle = document.getElementById('sharePreviewSubtitle');
+  const shareWhatsapp = document.getElementById('shareWhatsapp');
+  const shareTwitter = document.getElementById('shareTwitter');
+  const shareTelegram = document.getElementById('shareTelegram');
+  const shareCopy = document.getElementById('shareCopy');
+  const shareCopyLabel = document.getElementById('shareCopyLabel');
+  const shareModalClose = document.getElementById('shareModalClose');
+
+  function resolveImageUrl(img){
+    if(!img) return '';
+    return /^https?:\/\//.test(img) ? img : SITE_URL + img;
+  }
+
+  function openShareModal(){
     if(!currentArticle) return;
-    // Canonical link (has OG/Twitter meta for rich previews, then redirects into the SPA)
     const shareUrl = SITE_URL + 'a/' + currentArticle.slug + '.html';
-    const shareData = { title: currentArticle.title, text: currentArticle.subtitle || '', url: shareUrl };
+    const imgUrl = resolveImageUrl(currentArticle.image);
 
-    if(navigator.share){
-      try{
-        await navigator.share(shareData);
-        return;
-      }catch(e){
-        if(e && e.name === 'AbortError') return; // user cancelled, do nothing
-        // fall through to copy on other failures
-      }
+    if(imgUrl){
+      sharePreviewImg.src = imgUrl;
+      sharePreviewImg.style.display = 'block';
+    } else {
+      sharePreviewImg.style.display = 'none';
     }
+    sharePreviewEyebrow.textContent = currentArticle.category + (currentArticle.date ? ' · ' + currentArticle.date : '');
+    sharePreviewTitle.textContent = currentArticle.title;
+    sharePreviewSubtitle.textContent = currentArticle.subtitle || '';
+    sharePreviewSubtitle.style.display = currentArticle.subtitle ? 'block' : 'none';
+
+    const shareText = encodeURIComponent(currentArticle.title);
+    const encodedUrl = encodeURIComponent(shareUrl);
+    shareWhatsapp.href = `https://wa.me/?text=${shareText}%20${encodedUrl}`;
+    shareTwitter.href = `https://twitter.com/intent/tweet?text=${shareText}&url=${encodedUrl}`;
+    shareTelegram.href = `https://t.me/share/url?url=${encodedUrl}&text=${shareText}`;
+
+    shareCopyLabel.textContent = 'نسخ الرابط';
+    shareCopy.classList.remove('copied');
+    shareCopy.dataset.url = shareUrl;
+
+    shareOverlay.classList.add('active');
+  }
+
+  function closeShareModal(){
+    shareOverlay.classList.remove('active');
+  }
+
+  shareBtn.addEventListener('click', openShareModal);
+  shareModalClose.addEventListener('click', closeShareModal);
+  shareOverlay.addEventListener('click', (e) => { if(e.target === shareOverlay) closeShareModal(); });
+  document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeShareModal(); });
+
+  shareCopy.addEventListener('click', async () => {
+    const url = shareCopy.dataset.url;
     try{
-      await navigator.clipboard.writeText(shareUrl);
-      flashShareBtn('تم النسخ');
+      await navigator.clipboard.writeText(url);
     }catch(e){
-      // Last-resort fallback for browsers without clipboard API
-      window.prompt('انسخ الرابط:', shareUrl);
+      window.prompt('انسخ الرابط:', url);
     }
-  }
-
-  function flashShareBtn(msg){
-    const original = 'مشاركة';
-    shareBtnText.textContent = msg;
-    shareBtn.classList.add('copied');
+    shareCopyLabel.textContent = 'تم النسخ';
+    shareCopy.classList.add('copied');
     setTimeout(() => {
-      shareBtnText.textContent = original;
-      shareBtn.classList.remove('copied');
+      shareCopyLabel.textContent = 'نسخ الرابط';
+      shareCopy.classList.remove('copied');
     }, 1800);
-  }
-
-  shareBtn.addEventListener('click', shareCurrentArticle);
+  });
 
   function route(){
     const hash = window.location.hash;
