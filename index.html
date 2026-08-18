@@ -76,6 +76,8 @@
   article.piece .piece-subtitle{ color: var(--ink-dim); font-size: 16px; }
   article.piece .body p{ font-size: 19px; line-height: 2.15; color: var(--ink); margin: 0 0 26px; max-width: var(--measure); text-align: justify; }
   article.piece .body{ padding-bottom: 100px; }
+  article.piece .cover{ width: 100%; max-width: var(--measure); border: 1px solid var(--hairline); border-radius: 6px; margin: 0 0 34px; display:block; }
+  article.piece .body img{ width: 100%; max-width: var(--measure); border: 1px solid var(--hairline); border-radius: 6px; margin: 0 0 26px; display:block; }
 
   .state-msg{ text-align:center; color: var(--ink-faint); padding: 60px 0; font-size: 14px; }
 
@@ -103,7 +105,7 @@
     <article class="piece" id="pieceContent"></article>
   </div>
 
-  <footer>أُضيفت المقالات عبر <a href="admin.html">صفحة الإضافة الخاصة</a></footer>
+  <footer>أرشيف شخصي — عبدالرحمن حسين</footer>
 </div>
 
 <script>
@@ -156,13 +158,18 @@
     const a = ARTICLES.find(x => x.slug === slug && x.ready);
     if(!a){ window.location.hash = '#/'; return; }
     document.title = a.title + ' — أرشيف عبدالرحمن حسين';
+    const bodyHtml = a.content.map(p => {
+      if(p.startsWith('IMG:')) return `<img src="${p.slice(4).trim()}" alt="">`;
+      return `<p>${p}</p>`;
+    }).join('');
     pieceContent.innerHTML = `
       <header>
         <div class="eyebrow">${a.category}${a.date ? ' · ' + a.date : ''}</div>
         <h2>${a.title}</h2>
         ${a.subtitle ? `<div class="piece-subtitle">${a.subtitle}</div>` : ''}
       </header>
-      <div class="body">${a.content.map(p => `<p>${p}</p>`).join('')}</div>
+      ${a.image ? `<img class="cover" src="${a.image}" alt="">` : ''}
+      <div class="body">${bodyHtml}</div>
     `;
   }
 
@@ -197,6 +204,13 @@
 
   init();
 </script>
+
+<!--
+  عداد الزوار (GoatCounter) — مجاني، بيديك عدد زوار حقيقي بالظبط.
+  اتبع الخطوات في README.md عشان تفعّله، وبعدين بدّل "your-code" باسم الحساب بتاعك.
+-->
+<script data-goatcounter="https://abdulrahmanarchive.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
 
 </body>
 </html>
