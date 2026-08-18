@@ -68,8 +68,18 @@
   .reader{ display:none; }
   .reader.active{ display:block; }
   .list-view.hidden{ display:none; }
-  .back-link{ display:inline-flex; align-items:center; gap: 6px; color: var(--brass); font-size: 14px; margin: 40px 0 30px; }
+  .reader-nav{ display:flex; justify-content:space-between; align-items:center; gap: 16px; margin: 40px 0 30px; }
+  .back-link{ display:inline-flex; align-items:center; gap: 6px; color: var(--brass); font-size: 14px; }
   .back-link:hover{ opacity: 0.8; }
+  .share-btn{
+    display:inline-flex; align-items:center; gap: 7px;
+    background: none; border: 1px solid var(--hairline); color: var(--ink-dim);
+    font-family: inherit; font-size: 13px; padding: 8px 16px; border-radius: 6px;
+    cursor: pointer; transition: border-color 0.2s ease, color 0.2s ease;
+  }
+  .share-btn:hover{ border-color: var(--brass); color: var(--brass); }
+  .share-btn.copied{ border-color: #7DA870; color: #7DA870; }
+  .share-btn svg{ width: 14px; height: 14px; flex-shrink: 0; }
   article.piece header{ padding-bottom: 28px; margin-bottom: 34px; border-bottom: 1px solid var(--hairline); text-align: right; }
   article.piece .eyebrow{ margin-bottom: 16px; }
   article.piece h2{ font-family: 'Aref Ruqaa', serif; font-weight: 700; font-size: clamp(30px, 5vw, 44px); line-height: 1.4; margin: 0 0 10px; }
@@ -101,7 +111,13 @@
   </div>
 
   <div id="readerView" class="reader">
-    <a href="#/" class="back-link">→ العودة إلى الأرشيف</a>
+    <div class="reader-nav">
+      <a href="#/" class="back-link">→ العودة إلى الأرشيف</a>
+      <button id="shareBtn" class="share-btn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"></line><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"></line></svg>
+        <span id="shareBtnText">مشاركة</span>
+      </button>
+    </div>
     <article class="piece" id="pieceContent"></article>
   </div>
 
@@ -109,15 +125,19 @@
 </div>
 
 <script>
-  const CATEGORIES = ["الكل", "مقالة", "تقرير", "مراجعة", "مقابلة"];
+  const CATEGORIES = ["الكل", "مقالة", "تقرير", "مراجعة", "مقابلة", "خواطر"];
+  const SITE_URL = "https://abdulrahmann0marr-source.github.io/archive/";
   let activeCategory = "الكل";
   let ARTICLES = [];
+  let currentArticle = null;
 
   const filtersEl = document.getElementById('filters');
   const entriesEl = document.getElementById('entries');
   const listView = document.getElementById('listView');
   const readerView = document.getElementById('readerView');
   const pieceContent = document.getElementById('pieceContent');
+  const shareBtn = document.getElementById('shareBtn');
+  const shareBtnText = document.getElementById('shareBtnText');
 
   function renderFilters(){
     filtersEl.innerHTML = CATEGORIES.map((cat, i) => {
@@ -157,6 +177,7 @@
   function renderPiece(slug){
     const a = ARTICLES.find(x => x.slug === slug && x.ready);
     if(!a){ window.location.hash = '#/'; return; }
+    currentArticle = a;
     document.title = a.title + ' — أرشيف عبدالرحمن حسين';
     const bodyHtml = a.content.map(p => {
       if(p.startsWith('IMG:')) return `<img src="${p.slice(4).trim()}" alt="">`;
@@ -172,6 +193,42 @@
       <div class="body">${bodyHtml}</div>
     `;
   }
+
+  async function shareCurrentArticle(){
+    if(!currentArticle) return;
+    // Canonical link (has OG/Twitter meta for rich previews, then redirects into the SPA)
+    const shareUrl = SITE_URL + 'a/' + currentArticle.slug + '.html';
+    const shareData = { title: currentArticle.title, text: currentArticle.subtitle || '', url: shareUrl };
+
+    if(navigator.share){
+      try{
+        await navigator.share(shareData);
+        return;
+      }catch(e){
+        if(e && e.name === 'AbortError') return; // user cancelled, do nothing
+        // fall through to copy on other failures
+      }
+    }
+    try{
+      await navigator.clipboard.writeText(shareUrl);
+      flashShareBtn('تم النسخ');
+    }catch(e){
+      // Last-resort fallback for browsers without clipboard API
+      window.prompt('انسخ الرابط:', shareUrl);
+    }
+  }
+
+  function flashShareBtn(msg){
+    const original = 'مشاركة';
+    shareBtnText.textContent = msg;
+    shareBtn.classList.add('copied');
+    setTimeout(() => {
+      shareBtnText.textContent = original;
+      shareBtn.classList.remove('copied');
+    }, 1800);
+  }
+
+  shareBtn.addEventListener('click', shareCurrentArticle);
 
   function route(){
     const hash = window.location.hash;
