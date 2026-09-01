@@ -68,16 +68,14 @@
   .reader{ display:none; }
   .reader.active{ display:block; }
   .list-view.hidden{ display:none; }
-  .reader-nav{ display:flex; justify-content:space-between; align-items:center; gap: 16px; margin: 40px 0 30px; }
-  .back-link{ display:inline-flex; align-items:center; gap: 6px; color: var(--brass); font-size: 14px; }
-  .back-link:hover{ opacity: 0.8; }
-  .share-btn{
+  .reader-nav{ display:flex; justify-content:flex-start; align-items:center; gap: 12px; margin: 40px 0 30px; }
+  .back-link, .share-btn{
     display:inline-flex; align-items:center; gap: 7px;
     background: none; border: 1px solid var(--hairline); color: var(--ink-dim);
     font-family: inherit; font-size: 13px; padding: 8px 16px; border-radius: 6px;
     cursor: pointer; transition: border-color 0.2s ease, color 0.2s ease;
   }
-  .share-btn:hover{ border-color: var(--brass); color: var(--brass); }
+  .back-link:hover, .share-btn:hover{ border-color: var(--brass); color: var(--brass); }
   .share-btn.copied{ border-color: #7DA870; color: #7DA870; }
   .share-btn svg{ width: 14px; height: 14px; flex-shrink: 0; }
   article.piece header{ padding-bottom: 28px; margin-bottom: 34px; border-bottom: 1px solid var(--hairline); text-align: right; }
