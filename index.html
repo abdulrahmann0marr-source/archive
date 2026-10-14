@@ -137,26 +137,24 @@
     position: fixed; inset: 0; z-index: 1000; background: var(--bg);
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     cursor: pointer;
-    animation: introOut 0.7s ease 3.6s forwards;
+    animation: introOut 0.7s ease 5.6s forwards;
   }
   .intro.gone{ display: none; }
   @keyframes introOut{ to{ opacity: 0; visibility: hidden; } }
-  .intro svg{ width: min(46vw, 190px); height: auto; overflow: visible; }
-  .intro .draw{
-    fill: none; stroke: var(--brass); stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round;
-    stroke-dasharray: 1; stroke-dashoffset: 1;
-    animation: drawLine 1.8s cubic-bezier(.6,.1,.3,1) forwards;
-  }
-  .intro .draw.star{ stroke-width: 1.3; animation-delay: 0.9s; animation-duration: 1.6s; }
-  .intro .draw.star2{ animation-delay: 1.2s; }
-  .intro .draw.inner{ stroke: var(--brass-dim); stroke-width: 1; animation-delay: 0.4s; animation-duration: 2s; }
+  .intro svg{ width: min(64vw, 250px); height: auto; overflow: visible; }
+  .intro .frame{ fill: none; stroke: var(--brass); stroke-width: 1.6; stroke-dasharray: 1; stroke-dashoffset: 1;
+    animation: drawLine 1.6s ease forwards; }
+  .intro .ln{ fill: none; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1;
+    animation: drawLine 1.1s ease-out forwards; animation-delay: var(--d, 0s); }
+  .intro .ln.o{ stroke: var(--brass); stroke-width: 2.6; }
+  .intro .ln.i{ stroke: #120F0C; stroke-width: 1.1; }
   @keyframes drawLine{ to{ stroke-dashoffset: 0; } }
   .intro .intro-name{
     font-family: 'Aref Ruqaa', serif; font-size: clamp(30px, 8vw, 44px); color: var(--ink);
-    margin-top: 26px; opacity: 0; animation: fadeIn 1s ease 2s forwards;
+    margin-top: 28px; opacity: 0; animation: fadeIn 1s ease 3.3s forwards;
   }
   .intro .intro-sub{
-    font-size: 13px; color: var(--brass); margin-top: 8px; opacity: 0; animation: fadeIn 1s ease 2.4s forwards;
+    font-size: 13px; color: var(--brass); margin-top: 8px; opacity: 0; animation: fadeIn 1s ease 3.7s forwards;
   }
   @keyframes fadeIn{ to{ opacity: 1; } }
   @media (prefers-reduced-motion: reduce){
@@ -187,11 +185,10 @@
 <div class="deco deco-side r" aria-hidden="true"></div>
 
 <div id="intro" class="intro" aria-hidden="true">
-  <svg viewBox="0 0 200 260">
-    <path class="draw" pathLength="1" d="M42 250 V138 A58 58 0 1 1 158 138 V250"/>
-    <path class="draw inner" pathLength="1" d="M56 250 V140 A44 44 0 1 1 144 140 V250"/>
-    <path class="draw star" pathLength="1" d="M72 92 H128 V148 H72 Z"/>
-    <path class="draw star star2" pathLength="1" d="M100 82 L138 120 L100 158 L62 120 Z"/>
+  <svg id="introSvg" viewBox="-92 -92 184 184">
+    <defs><clipPath id="introClip"><rect x="-85" y="-85" width="170" height="170"/></clipPath></defs>
+    <g id="introLines" clip-path="url(#introClip)"></g>
+    <rect class="frame" pathLength="1" x="-85" y="-85" width="170" height="170"/>
   </svg>
   <div class="intro-name">عبدالرحمن حسين</div>
   <div class="intro-sub">أرشيف شخصي</div>
@@ -203,9 +200,24 @@
   try{ seen = sessionStorage.getItem('introSeen') === '1'; }catch(e){}
   if(seen){ el.classList.add('gone'); return; }
   try{ sessionStorage.setItem('introSeen','1'); }catch(e){}
+  var DATA = "112.0,73.9,82.0,82.0;-90.0,52.0,-98.0,22.0;68.0,30.0,90.0,8.0;-30.0,52.0,-52.0,73.9;60.0,-0.0,90.0,-8.0;30.0,52.0,22.0,22.0;52.0,-30.0,22.0,-22.0;-0.0,60.0,-2.1,68.0;0.0,60.0,-8.0,30.0;8.0,73.9,2.1,68.0;30.0,52.0,8.0,30.0;-52.0,-30.0,-22.0,-22.0;-60.0,43.9,-62.1,35.9;0.0,-60.0,-2.1,-68.0;-30.0,-52.0,-8.0,-30.0;-68.0,-30.0,-62.1,-35.9;-68.0,30.0,-98.0,22.0;-30.0,-52.0,-22.0,-22.0;60.0,-43.9,68.0,-73.9;-30.0,-52.0,-52.0,-73.9;-30.0,52.0,-8.0,30.0;30.0,52.0,38.0,82.0;-60.0,-0.0,-30.0,8.0;30.0,-52.0,38.0,-82.0;52.0,-30.0,30.0,-8.0;68.0,-30.0,90.0,-8.0;-0.0,-60.0,8.0,-30.0;0.0,-60.0,2.1,-68.0;-30.0,52.0,-22.0,22.0;90.0,52.0,98.0,22.0;-8.0,-73.9,-38.0,-82.0;-68.0,-30.0,-90.0,-8.0;8.0,-73.9,30.0,-95.9;-0.0,103.9,30.0,95.9;52.0,30.0,22.0,22.0;52.0,30.0,30.0,8.0;8.0,-73.9,38.0,-82.0;30.0,-52.0,22.0,-22.0;-52.0,30.0,-57.9,35.9;8.0,-73.9,-0.0,-71.8;-68.0,30.0,-90.0,8.0;-60.0,-0.0,-30.0,-8.0;90.0,-52.0,98.0,-22.0;-52.0,-30.0,-30.0,-8.0;60.0,-0.0,30.0,8.0;-60.0,43.9,-68.0,73.9;-68.0,-30.0,-60.0,-32.1;52.0,30.0,57.9,35.9;0.0,-103.9,-30.0,-95.9;52.0,-30.0,57.9,-35.9;112.0,-73.9,82.0,-82.0;-0.0,60.0,2.1,68.0;-0.0,-103.9,30.0,-95.9;-8.0,-73.9,-2.1,-68.0;-30.0,-52.0,-38.0,-82.0;8.0,73.9,30.0,95.9;60.0,43.9,68.0,73.9;-0.0,-60.0,-8.0,-30.0;-90.0,52.0,-68.0,73.9;60.0,-43.9,62.1,-35.9;68.0,-30.0,62.1,-35.9;-68.0,30.0,-60.0,32.1;30.0,52.0,52.0,73.9;-8.0,-73.9,-30.0,-95.9;-52.0,-30.0,-57.9,-35.9;-90.0,-52.0,-68.0,-73.9;-60.0,-43.9,-52.0,-73.9;-52.0,30.0,-30.0,8.0;-30.0,52.0,-38.0,82.0;60.0,-0.0,30.0,-8.0;60.0,-43.9,57.9,-35.9;68.0,30.0,60.0,32.1;-60.0,43.9,-52.0,73.9;-90.0,52.0,-82.0,82.0;-8.0,73.9,0.0,71.8;-68.0,-30.0,-98.0,-22.0;68.0,-30.0,60.0,-32.1;60.0,43.9,57.9,35.9;-112.0,-73.9,-82.0,-82.0;-8.0,-73.9,-0.0,-71.8;-52.0,30.0,-60.0,32.1;68.0,-30.0,98.0,-22.0;30.0,-52.0,8.0,-30.0;68.0,30.0,98.0,22.0;90.0,-52.0,68.0,-73.9;68.0,30.0,62.1,35.9;8.0,73.9,0.0,71.8;-8.0,73.9,-30.0,95.9;8.0,-73.9,2.1,-68.0;90.0,52.0,68.0,73.9;60.0,-43.9,52.0,-73.9;-60.0,-43.9,-57.9,-35.9;60.0,43.9,62.1,35.9;-52.0,30.0,-22.0,22.0;90.0,-52.0,82.0,-82.0;-52.0,-30.0,-60.0,-32.1;0.0,103.9,-30.0,95.9;-68.0,30.0,-62.1,35.9;-60.0,-0.0,-90.0,8.0;30.0,-52.0,52.0,-73.9;-8.0,73.9,-2.1,68.0;60.0,43.9,52.0,73.9;0.0,60.0,8.0,30.0;60.0,-0.0,90.0,8.0;-90.0,-52.0,-98.0,-22.0;90.0,52.0,82.0,82.0;52.0,-30.0,60.0,-32.1;-60.0,43.9,-57.9,35.9;-60.0,-43.9,-68.0,-73.9;-8.0,73.9,-38.0,82.0;-112.0,73.9,-82.0,82.0;52.0,30.0,60.0,32.1;-90.0,-52.0,-82.0,-82.0;-60.0,-43.9,-62.1,-35.9;8.0,73.9,38.0,82.0;-60.0,-0.0,-90.0,-8.0";
+  var NS = 'http://www.w3.org/2000/svg', g = document.getElementById('introLines');
+  DATA.split(';').forEach(function(t){
+    var p = t.split(',').map(Number);
+    var dist = Math.hypot((p[0]+p[2])/2, (p[1]+p[3])/2);
+    var delay = (0.3 + dist / 125 * 2.0).toFixed(2) + 's';
+    ['o','i'].forEach(function(c){
+      var l = document.createElementNS(NS, 'path');
+      l.setAttribute('d', 'M'+p[0]+' '+p[1]+'L'+p[2]+' '+p[3]);
+      l.setAttribute('pathLength', '1');
+      l.setAttribute('class', 'ln ' + c);
+      l.style.setProperty('--d', delay);
+      g.appendChild(l);
+    });
+  });
   function close(){ el.classList.add('gone'); }
   el.addEventListener('click', close);
-  setTimeout(close, 4400);
+  setTimeout(close, 6400);
 })();
 </script>
 
