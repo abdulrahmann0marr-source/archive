@@ -175,10 +175,17 @@
   @keyframes fadeIn{ to{ opacity: 1; } }
 
   /* logo: the lamp, fixed at top-right of the site */
-  .logo{ position: fixed; top: 0; right: 18px; width: 40px; z-index: 50; display: block; }
-  .logo:hover .lamp, .logo:hover .lamp-line{ stroke: #E0AE55; }
+  .logo{ position: fixed; top: 0; left: 18px; width: 40px; z-index: 50; display: block; }
+  .logo svg{ position: relative; opacity: 0.68; transition: opacity 0.2s ease; }
+  .logo:hover svg{ opacity: 1; }
+  .logo::before{ content: ''; position: absolute; left: 50%; top: 58%; width: 110px; height: 110px;
+    transform: translate(-50%, -50%); pointer-events: none;
+    background: radial-gradient(circle, rgba(197,148,61,0.13) 0%, rgba(197,148,61,0) 65%);
+    animation: logoGlow 5s ease-in-out infinite; }
+  @keyframes logoGlow{ 0%,100%{ opacity: 0.55; } 50%{ opacity: 1; } }
   @media (prefers-reduced-motion: reduce){
     .intro .lamp-wrap{ animation: none; }
+    .logo::before{ animation: none; }
     .intro{ display: none; }
   }
 
@@ -297,8 +304,8 @@
     var dx = (lr.left + lr.width/2) - (base.left + base.width/2);
     var dy = lr.top - base.top;
     el.classList.add('flying');
-    var an = lw.animate([{transform: from === 'none' ? 'none' : from},
-                         {transform: 'translate('+dx+'px,'+dy+'px) scale('+s+')'}],
+    var an = lw.animate([{transform: from === 'none' ? 'none' : from, opacity: 1},
+                         {transform: 'translate('+dx+'px,'+dy+'px) scale('+s+')', opacity: 0.68}],
                         {duration: 950, easing: 'cubic-bezier(.65,0,.25,1)', fill: 'forwards'});
     an.onfinish = finish;
   }
