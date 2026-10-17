@@ -178,6 +178,8 @@
   .logo{ position: fixed; top: 0; left: 18px; width: 40px; z-index: 50; display: block; }
   .logo svg{ position: relative; opacity: 0.68; transition: opacity 0.2s ease; }
   .logo:hover svg{ opacity: 1; }
+  .logo{ transition: opacity 0.3s ease; }
+  body.in-article .logo{ opacity: 0 !important; pointer-events: none; }
   .logo::before{ content: ''; position: absolute; left: 50%; top: 58%; width: 110px; height: 110px;
     transform: translate(-50%, -50%); pointer-events: none;
     background: radial-gradient(circle, rgba(197,148,61,0.13) 0%, rgba(197,148,61,0) 65%);
@@ -517,10 +519,12 @@
       renderPiece(hash.slice(2));
       listView.classList.add('hidden');
       readerView.classList.add('active');
+      document.body.classList.add('in-article');
       window.scrollTo(0,0);
     } else {
       listView.classList.remove('hidden');
       readerView.classList.remove('active');
+      document.body.classList.remove('in-article');
       document.title = 'أرشيف عبدالرحمن حسين';
     }
   }
